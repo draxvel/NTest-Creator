@@ -6,7 +6,8 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql printsupport
+
 
 TARGET = NTest-Creator
 TEMPLATE = app
@@ -24,8 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    speedenter.cpp \
+    students.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    speedenter.h \
+    students.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    speedenter.ui \
+    students.ui
