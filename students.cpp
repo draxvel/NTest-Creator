@@ -11,6 +11,8 @@
 #include <QTextDocument>
 #include <QTextStream>
 
+#include <QDebug>
+
 Students::Students(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Students)
@@ -154,6 +156,7 @@ void Students::Open(QString filename)
 
     database.setDatabaseName(filename);
 
+    qDebug()<<"fileanme i open "<<filename;
     //Якщо БД не відкрилась
     if(!database.open() || filename.isEmpty())
     {

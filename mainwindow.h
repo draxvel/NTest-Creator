@@ -6,6 +6,8 @@
 #include <QSqlQuery>
 #include <vector>
 
+#include "students.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -71,6 +73,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+//--------
     struct OneQuestion
     {
         int id;
@@ -91,10 +94,9 @@ private:
 
     OneQuestion *Element = new OneQuestion;
     std::vector <OneQuestion *> vect;
-   // std::vector <OneQuestion *> :: iterator iter;
 
 //------------------------------------
-    struct Temp
+    struct Student
     {
         int id;
         QString surname;
@@ -102,10 +104,11 @@ private:
         int password;
     };
 
-    std::vector <Temp *> TempElementVect;
-    Temp *TempElement = new Temp;
+    std::vector <Student *> StudentVect;
+    Student *TempStudent = new Student;
 
     int SIZEt;
+
 //--------------------------------------
 
     int ID;
@@ -117,6 +120,8 @@ private:
 
     QString fileName;
     QSqlDatabase database;
+
+    Students st;
 };
 
 #endif // MAINWINDOW_H

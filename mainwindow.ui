@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>NTest-Creator</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -27,7 +27,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -50,7 +50,7 @@
         <item row="2" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>Час для проходження</string>
+           <string>Час для проходження (хв)</string>
           </property>
          </widget>
         </item>
@@ -100,7 +100,7 @@
           <item>
            <widget class="QPushButton" name="pushButtonOpen">
             <property name="text">
-             <string>Відкрити список студентів</string>
+             <string>Редагувати список студентів</string>
             </property>
            </widget>
           </item>
@@ -126,60 +126,20 @@
         <string>Редактор запитань</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="9" column="3">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="6" column="4">
-         <widget class="QLabel" name="label_10">
+        <item row="0" column="5">
+         <widget class="QLabel" name="label_6">
           <property name="text">
-           <string>в</string>
+           <string>Тип запитання</string>
           </property>
          </widget>
         </item>
-        <item row="10" column="4">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>г</string>
-          </property>
-         </widget>
+        <item row="0" column="6">
+         <widget class="QComboBox" name="comboBoxType"/>
         </item>
-        <item row="11" column="5">
-         <widget class="QLabel" name="label_7">
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
-          <property name="text">
-           <string>Правильна відповідь</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
+        <item row="2" column="0" colspan="2">
+         <widget class="QLineEdit" name="lineEditNote"/>
         </item>
-        <item row="10" column="1">
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>б</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="5">
-         <widget class="QLineEdit" name="lineEditAnswer3"/>
-        </item>
-        <item row="4" column="7">
+        <item row="3" column="6">
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -192,33 +152,79 @@
           </property>
          </spacer>
         </item>
-        <item row="3" column="0" colspan="6">
-         <widget class="QLineEdit" name="lineEditNote"/>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>a</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
         </item>
-        <item row="0" column="7">
-         <widget class="QComboBox" name="comboBoxType"/>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="lineEditAnswer1"/>
         </item>
-        <item row="10" column="5">
+        <item row="4" column="3">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>в</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="4">
+         <widget class="QLineEdit" name="lineEditAnswer3"/>
+        </item>
+        <item row="5" column="2">
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>б</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="lineEditAnswer2"/>
+        </item>
+        <item row="6" column="3">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>г</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="4">
          <widget class="QLineEdit" name="lineEditAnswer4"/>
         </item>
-        <item row="1" column="0" colspan="7">
-         <widget class="QLineEdit" name="lineEditQuestion"/>
-        </item>
-        <item row="0" column="6">
-         <widget class="QLabel" name="label_6">
+        <item row="7" column="4">
+         <widget class="QLabel" name="label_7">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
           <property name="text">
-           <string>Тип запитання</string>
+           <string>Правильна відповідь</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
-        <item row="15" column="1">
-         <widget class="QPushButton" name="pushButtonNext">
-          <property name="text">
-           <string>&gt;</string>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="6" colspan="2">
+        <item row="7" column="5" colspan="2">
          <widget class="QStackedWidget" name="stackedWidget">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -233,7 +239,7 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page">
            <property name="layoutDirection">
@@ -334,37 +340,43 @@
           </widget>
          </widget>
         </item>
-        <item row="6" column="2">
-         <widget class="QLineEdit" name="lineEditAnswer1"/>
-        </item>
-        <item row="19" column="7">
-         <widget class="QPushButton" name="pushButtonDeleteQ">
+        <item row="8" column="0">
+         <widget class="QPushButton" name="pushButtonNext">
           <property name="text">
-           <string>Видалити запитання</string>
+           <string>&gt;</string>
           </property>
          </widget>
         </item>
-        <item row="15" column="7">
-         <widget class="QPushButton" name="pushButtonAddQ">
-          <property name="text">
-           <string>Додати запитання</string>
-          </property>
-         </widget>
+        <item row="8" column="1" rowspan="2" colspan="6">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="pushButtonSaveNewTest">
+            <property name="text">
+             <string>Зберегти</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QPushButton" name="pushButtonAddQ">
+              <property name="text">
+               <string>Додати запитання</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonDeleteQ">
+              <property name="text">
+               <string>Видалити запитання</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
-        <item row="6" column="1">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>a</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="2">
-         <widget class="QLineEdit" name="lineEditAnswer2"/>
-        </item>
-        <item row="19" column="1">
+        <item row="9" column="0">
          <widget class="QPushButton" name="pushButtonPrevious">
           <property name="enabled">
            <bool>true</bool>
@@ -374,12 +386,8 @@
           </property>
          </widget>
         </item>
-        <item row="19" column="2" colspan="5">
-         <widget class="QPushButton" name="pushButtonSaveNewTest">
-          <property name="text">
-           <string>Зберегти</string>
-          </property>
-         </widget>
+        <item row="1" column="0" colspan="5">
+         <widget class="QLineEdit" name="lineEditQuestion"/>
         </item>
        </layout>
       </widget>

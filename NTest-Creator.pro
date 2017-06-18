@@ -4,6 +4,13 @@
 #
 #-------------------------------------------------
 
+#To do
+#1  - розібратись з роботою кріейтора, редактор питань обмежети тільки на редагування
+#а створення тесту вже має всі ф-кції
+
+#2 - зібрати NTest вже готову, і зробити інсталяшку
+
+
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql printsupport
@@ -11,6 +18,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql printsupport
 
 TARGET = NTest-Creator
 TEMPLATE = app
+
+RC_FILE = myapp.rc
+
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -27,12 +37,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     speedenter.cpp \
-    students.cpp
+    students.cpp \
+    result.cpp \
+    about.cpp
 
 HEADERS  += mainwindow.h \
     speedenter.h \
-    students.h
+    students.h \
+    result.h \
+    about.h
 
 FORMS    += mainwindow.ui \
     speedenter.ui \
-    students.ui
+    students.ui \
+    result.ui \
+    about.ui
+
+DISTFILES += \
+    myapp.rc

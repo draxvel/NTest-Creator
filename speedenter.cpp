@@ -18,20 +18,25 @@ SpeedEnter::~SpeedEnter()
 
 void SpeedEnter::on_pushButtonCreateTest_clicked()
 {
-    createTest();
+    w.SaveAsDB();
 }
 
 void SpeedEnter::on_pushButtonEditTest_clicked()
 {
-    editTest();
+    w.OpenDB();
 }
 
 void SpeedEnter::on_pushButtonStudents_clicked()
 {
-    students();
+    st.show();
 }
 
 void SpeedEnter::on_pushButtonAbout_clicked()
 {
-    about();
+    a.show();
+}
+
+void SpeedEnter::on_pushButtonStudents_3_clicked()
+{
+    r.show();
 }

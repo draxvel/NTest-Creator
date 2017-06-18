@@ -2,6 +2,10 @@
 #define SPEEDENTER_H
 
 #include <QDialog>
+#include "mainwindow.h"
+#include "students.h"
+#include "result.h"
+#include "about.h"
 
 namespace Ui {
 class SpeedEnter;
@@ -19,7 +23,6 @@ signals:
     createTest();
     editTest();
     students();
-    about();
 
 private slots:
     void on_pushButtonCreateTest_clicked();
@@ -30,8 +33,15 @@ private slots:
 
     void on_pushButtonAbout_clicked();
 
+    void on_pushButtonStudents_3_clicked();
+
 private:
     Ui::SpeedEnter *ui;
+
+    MainWindow w;
+    Result r;
+    Students st;
+    About a;
 };
 
 #endif // SPEEDENTER_H

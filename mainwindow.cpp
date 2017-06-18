@@ -5,6 +5,7 @@
 #include <QSqlRecord>
 #include <QtSql>
 #include <QSqlQuery>
+#include <QCloseEvent>
 
 #include <QMessageBox>
 
@@ -14,18 +15,20 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    qDebug()<<"in CONSTRUCTOR";
+    //Для відкриття чи редагування списку студентів
+    QObject::connect(this, SIGNAL(openList(QString)), &st, SLOT(Open(QString)));
+    QObject::connect(this, SIGNAL(createList()), &st, SLOT(show()));
+
 
     ui->comboBoxType->addItem("Одна відповідь");
     ui->comboBoxType->addItem("Декілька відповідей");
     ui->comboBoxType->addItem("Ввести відповідь");
 
     ui->pushButtonPrevious->setEnabled(false);
-
     ui->pushButtonDeleteQ->setEnabled(false);
     ui->pushButtonAddQ->setEnabled(true);
-
     ui->pushButtonSaveNewTest->setVisible(false);
+    ui->pushButtonOpen->setEnabled(false);
 
     QObject::connect(ui->lineEditTitle,SIGNAL(textChanged(QString)), SLOT(FirstPageChanged()));
     QObject::connect(ui->lineEditAuthor,SIGNAL(textChanged(QString)), SLOT(FirstPageChanged()));
@@ -56,6 +59,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+//Відкриваємо БД для редагування
 void MainWindow::OpenDB()
 {
     fileName = QFileDialog::getOpenFileName(
@@ -65,7 +69,7 @@ void MainWindow::OpenDB()
                 "NTest (*.ntk)" //check only database files
                 );
 
-    database = QSqlDatabase::addDatabase("QSQLITE", "FIRST");
+    database = QSqlDatabase::addDatabase("QSQLITE");
 
     database.setDatabaseName(fileName);
 
@@ -129,7 +133,7 @@ void MainWindow::OpenDB()
 
            ID = 0;
 
-           ui->pushButtonOpen->setText("Редагувати список студентів");
+           ui->pushButtonOpen->setEnabled(true);
 
            ui->lineEditTitle->setText(title);
            ui->lineEditAuthor->setText(author);
@@ -140,6 +144,7 @@ void MainWindow::OpenDB()
     }
 }
 
+//Створюємо БД для внесення питань
 void MainWindow::SaveAsDB()
 {
     fileName =  QFileDialog::getSaveFileName(
@@ -149,15 +154,13 @@ void MainWindow::SaveAsDB()
                 "NTest (*.ntk)"            //check only database files
                 );
 
-    database = QSqlDatabase::addDatabase("QSQLITE", "FIRST");
+    database = QSqlDatabase::addDatabase("QSQLITE");
 
     database.setDatabaseName(fileName);
 
     if(!database.open() || fileName.isEmpty())
     {
-        QMessageBox msgBox;
-        msgBox.setText("Помилка створення БД");
-        msgBox.exec();
+        QMessageBox::critical(this, tr("Помилка!"), tr("Помилка створення БД!"));
     }
     else
     {
@@ -176,7 +179,7 @@ void MainWindow::SaveAsDB()
                        ");";
 
                if (!query.exec(AboutTable))
-                   qDebug() << query.lastError().text();
+                  QMessageBox::critical(this, tr("Помилка!"), query.lastError().text());
 
       QString QuestionTable= "CREATE TABLE Question ("
                        "id	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
@@ -191,7 +194,7 @@ void MainWindow::SaveAsDB()
                    ");";
 
                if (!query.exec(QuestionTable))
-                   qDebug() << query.lastError().text();
+                   QMessageBox::critical(this, tr("Помилка!"), query.lastError().text());
 
       QString StudentsTable= "CREATE TABLE Student ("
                        "id	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
@@ -201,13 +204,12 @@ void MainWindow::SaveAsDB()
                    ");";
 
                if (!query.exec(StudentsTable))
-                   qDebug() << query.lastError().text();
+                   QMessageBox::critical(this, tr("Помилка!"), query.lastError().text());
 
             ui->tabWidget->setCurrentIndex(0);
 
             ID = 0;
             ui->pushButtonNext->setEnabled(false);
-            ui->pushButtonOpen->setText("Створити список студентів");
 
             correctAnswersWidgetShow();
     }
@@ -215,27 +217,60 @@ void MainWindow::SaveAsDB()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    qDebug()<<"from close event";
-    database.close();
-    title = "";
-    time = 0;
-    author = "";
-    perQuestion  = 0.0;
-    SIZE = 0;
-    vect.clear();
+    QMessageBox msgBox;
+    msgBox.setText("Завершити?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    int res = msgBox.exec();
 
-    ui->pushButtonPrevious->setEnabled(false);
+    if (res == QMessageBox::No)
+    {
+        event->ignore();
+    }
+    else
+    {
+        qDebug()<<"from close event";
+        database.close();
+        title = "";
+        time = 0;
+        author = "";
+        perQuestion  = 0.0;
+        ui->lineEditTitle->clear();
+        ui->lineEditAuthor->clear();
+        ui->spinBoxTime->clear();
+        ui->doubleSpinBoxPoints->clear();
 
-    ui->pushButtonDeleteQ->setEnabled(false);
+        SIZE = 0;
+        vect.clear();
+        StudentVect.clear();
 
-    ui->pushButtonSaveNewTest->setVisible(false);
+        ui->pushButtonPrevious->setEnabled(false);
 
-    cleanWidgets();
+        ui->pushButtonDeleteQ->setEnabled(false);
+
+        ui->pushButtonSaveNewTest->setVisible(false);
+
+        cleanWidgets();
+
+        event->accept();
+    }
 }
 
 void MainWindow::ToUi()
 {
     statusBarMessage();
+
+    if(editMode)
+    {
+        ui->pushButtonAddQ->setVisible(false);
+        ui->pushButtonDeleteQ->setVisible(false);
+    }
+    else
+    {
+        ui->pushButtonAddQ->setVisible(true);
+        ui->pushButtonDeleteQ->setVisible(true);
+    }
 
     //Перевірка на перше запитання
     if(ID == 0)
@@ -252,27 +287,26 @@ void MainWindow::ToUi()
     if(ID<SIZE)
     {
         ui->pushButtonDeleteQ->setEnabled(false);
+        ui->pushButtonAddQ->setEnabled(false);
         ui->pushButtonNext->setEnabled(true);
     }
     else
-       {
+    {
         ui->pushButtonDeleteQ->setEnabled(true);
+        ui->pushButtonAddQ->setEnabled(true);
         ui->pushButtonNext->setEnabled(false);
-       }
+    }
 
     //очищення попередніх дій
     cleanWidgets();
 
         Element = vect[ID];
-        qDebug()<<"ID in edit mode = "<<ID;
 
         //Перевірка чи не останнє запитання
         if(ID==SIZE)
             ui->pushButtonNext->setEnabled(false);
         else
             ui->pushButtonNext->setEnabled(true);
-
-        qDebug()<<"in UI (edit mode)";
 
 //------Заповнення віджетів
         //Отримаємо правильну відповідь
@@ -331,14 +365,9 @@ void MainWindow::ToUi()
 
 void MainWindow::saveIntoMass (int n)
 {
-
-    qDebug()<<"In saveIntoMass";
-
     //Зберігання даних з віджетів у масив
     if(ui->tabWidget->currentIndex()==0)
     {
-        qDebug()<<"in saveIntoMass (ID) (if)";
-
         title = ui->lineEditTitle->text();
         time = ui->spinBoxTime->value();
         author = ui->lineEditAuthor->text();
@@ -399,24 +428,31 @@ void MainWindow::saveIntoMass (int n)
 
                 Element->correct = tempCorrectAnswer.toLower();
 
-                if(!addNew) vect[n] = Element;
-                else
-                {
-                    vect.push_back(Element);
-                    qDebug()<<"push back new element";
-                    addNew = false;
-                }
+                                if(editMode) vect[n] = Element;
+                                else
+                                {
+                                    vect.push_back(Element);
+                                    qDebug()<<"push back new element";
+                                }
+
+//                if(!addNew) vect[n] = Element;
+//                else
+//                {
+//                    vect.push_back(Element);
+//                    qDebug()<<"push back new element";
+//                    addNew = false;
+//                }
     }
 }
 
 void MainWindow::UpdateDB()
 {
-    if(editModePLUS)
-    {
-        ClearDB();
-        SaveDB();
-    }
-    else
+//    if(editModePLUS)
+//    {
+//        ClearDB();
+//        SaveDB();
+//    }
+  //  else
     {
         QSqlQuery query;
         //Оновлення основної інформації у БД
@@ -425,7 +461,11 @@ void MainWindow::UpdateDB()
                        "WHERE id = '1'");
 
         if(query.exec())
-                QMessageBox::critical(this, tr("Чудово!"), tr("Дані оновлено!"));
+        {
+            QMessageBox msgb;
+            msgb.setText("Дані оновлено");
+            msgb.exec();
+        }
         else
                 QMessageBox::critical(this, tr("Помилка оновлення даних"), query.lastError().text());
 
@@ -456,22 +496,55 @@ void MainWindow::SaveDB()
 {
     QSqlQuery query;
 
-    //Додавання основної інформації у БД
-    query.prepare("INSERT INTO About (Title, Time, Author, PerQuestion) "
-                  "VALUES (?, ?, ?, ?)");
-    query.addBindValue(title);
-    query.addBindValue(time);
-    query.addBindValue(author);
-    query.addBindValue(perQuestion);
+    query.exec("SELECT id FROM About");
 
+    int s=0;
+    while (query.next())
+    {
+        s = query.value(0).toInt();
+    }
+    qDebug()<<"s in saveDB =            - "<<s;
+
+    if(s==1)
+    {
+        query.prepare("UPDATE About SET Title='"+title+"', Time='"+QString::number(time)+"', Author='"+author+"'"
+                       ", PerQuestion='"+QString::number(perQuestion)+"'"
+                       "WHERE id = '1'");
+
+        if(query.exec())
+        {
+            QMessageBox msgb;
+            msgb.setText("Дані оновлено");
+            msgb.exec();
+        }
+    }
+    else
+    {
+        //Додавання основної інформації у БД
+        query.prepare("INSERT INTO About (Title, Author, Time, PerQuestion) "
+                      "VALUES (?, ?, ?, ?)");
+        query.addBindValue(title);
+        query.addBindValue(author);
+        query.addBindValue(time);
+        query.addBindValue(perQuestion);
     if(query.exec())
-            QMessageBox::critical(this, tr("Exit"), tr("Дані збережено"));
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Дані збережено");
+        msgBox.exec();
+    }
     else
              QMessageBox::critical(this, tr("Помилка збереження даних: "), query.lastError().text());
+    }
 
+
+    query.prepare("DELETE FROM Question");
+    query.exec();
+    query.prepare("VACUUM");
+    query.exec();
 
     //Оновлення запитань у БД
-    for (int i = 0; i!=vect.size(); i++)
+    for (int i = 0; i!=SIZE; i++)
     {
         Element  = new OneQuestion;
         Element = vect[i];
@@ -495,8 +568,8 @@ void MainWindow::SaveDB()
 
         if(!query.exec())
                  QMessageBox::critical(this, tr("Error2"),
-                                      // query.lastError().text()+"\nПомиилка (запитання №"+QString::number(i)+" ");
-                                       query.lastError().text());
+                                       query.lastError().text()+"\nПомиилка (запитання №"+QString::number(i)+" ");
+                                       //query.lastError().text());
     }
 }
 
@@ -561,12 +634,13 @@ void MainWindow::on_pushButtonSaveFirstPage_clicked()
         ui->pushButtonSaveFirstPage->setEnabled(false);
         ui->pushButtonSaveFirstPage->setText("Збережено");
         if(editMode) UpdateDB();
-        ui->statusBar->showMessage(ui->statusBar->currentMessage()+ " | Дані  збережено");
+        else SaveDB();
+        ui->statusBar->showMessage(fileName+ " | Дані  збережено");
     }
 
     //запис у БД
 
-    if(!TempElementVect.empty())
+    if(!StudentVect.empty())
     {
                  QSqlQuery q(database);
                  q.prepare("DELETE FROM Student");
@@ -574,38 +648,56 @@ void MainWindow::on_pushButtonSaveFirstPage_clicked()
                  q.prepare("VACUUM");
                  q.exec();
 
-                 for(int i = 0; i<=SIZEt; i++)
+                 for(int i = 0; i<StudentVect.size(); i++)
                   {
-                      TempElement = new Temp;
-                      TempElement = TempElementVect[i];
+                      TempStudent = new Student;
+                      TempStudent = StudentVect[i];
 
-                      qDebug()<<TempElement->id ;
-                      qDebug()<<TempElement->surname;
-                      qDebug()<<TempElement->name;
-                      qDebug()<<TempElement->password;
+                      qDebug()<<TempStudent->id;
+                      qDebug()<<TempStudent->surname;
+                      qDebug()<<TempStudent->name;
+                      qDebug()<<TempStudent->password;
 
                       q.prepare("INSERT INTO Student (id, surname, name, password)"
                                     "VALUES (?, ?, ?, ?)");
-                      q.addBindValue(TempElement->id);
-                      q.addBindValue(TempElement->surname);
-                      q.addBindValue(TempElement->name);
-                      q.addBindValue(TempElement->password);
+                      q.addBindValue(TempStudent->id);
+                      q.addBindValue(TempStudent->surname);
+                      q.addBindValue(TempStudent->name);
+                      q.addBindValue(TempStudent->password);
 
                       if(!q.exec())
                           ui->statusBar->showMessage(fileName + " | "+ q.lastError().text());
                       else
-                      ui->statusBar->showMessage(fileName+ " | Завантаження списку студенті...["+i+"]");
+                      ui->statusBar->showMessage(fileName+ " | Завантаження списку студенті...["+QString::number(i)+"]");
 
-                      delete TempElement;
-                  }
+                     // delete TempStudent;
+                    }
 
-    ui->statusBar->showMessage(fileName+ " | Список завантажено");
+     }
+
+    QSqlQuery q(database);
+
+    q.exec("SELECT id FROM Student");
+
+    int s=-1;
+    while (q.next())
+    {
+        s = q.value(0).toInt();
+        qDebug()<<"s ="<<s;
     }
+    qDebug()<<"s =            - "<<s;
 
+    if(s==-1)
+    {
+        QMessageBox::critical(this, tr("От халепа!"), tr("Список студентів порожній"));
+        ui->statusBar->showMessage(fileName+ " | Список студентів порожній");
+    }
     else
     {
-        QMessageBox::critical(this, tr("От халепа!"), tr("Список студентів не додано"));
+        ui->statusBar->showMessage(fileName+ " | Список завантажено");
+        ui->pushButtonOpen->setEnabled(true);
     }
+    s=-1;
 
 }
 
@@ -786,7 +878,7 @@ void MainWindow::on_pushButtonAddQ_clicked()
     if(checkLineEdit())
     {
             qDebug()<<"in UI (create mode)";
-            addNew = true;
+           // addNew = true;
 
             //if()
             saveIntoMass (ID);
@@ -802,9 +894,8 @@ void MainWindow::on_pushButtonAddQ_clicked()
             ui->pushButtonSaveNewTest->setVisible(true);
             ui->pushButtonDeleteQ->setEnabled(true);
 
-            editModePLUS = true;
+            //editModePLUS = true;
         }
-
 }
 
 void MainWindow::on_pushButtonDeleteQ_clicked()
@@ -812,7 +903,7 @@ void MainWindow::on_pushButtonDeleteQ_clicked()
      ID--;
      SIZE--;
      vect.pop_back();
-     editModePLUS = true;
+    // editModePLUS = true;
      ToUi();
 }
 
@@ -828,16 +919,17 @@ void MainWindow::statusBarMessage()
 
 void MainWindow::on_pushButtonOpen_clicked()
 {
-    if(editMode)
+    qDebug()<<"fileName = "<<fileName;
+    //if(editMode)
         emit openList(fileName);
     createList();
 }
 
 void MainWindow::on_pushButtonAdd_clicked()
 {
-    if(!TempElementVect.empty())
+    if(!StudentVect.empty())
     {
-        TempElementVect.clear();
+        StudentVect.clear();
     }
 
     QString tempFileName = QFileDialog::getOpenFileName(
@@ -847,7 +939,7 @@ void MainWindow::on_pushButtonAdd_clicked()
                 "Student list (*.ntkList)" //check only database files
                 );
 
-    QSqlDatabase Tempdatabase = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase Tempdatabase = QSqlDatabase::addDatabase("QSQLITE", "Students");
 
     Tempdatabase.setDatabaseName(tempFileName);
 
@@ -859,47 +951,52 @@ void MainWindow::on_pushButtonAdd_clicked()
     }
     else
     {
-        QSqlQuery q;
+        QSqlQuery q("Students", Tempdatabase);
 
-        if(!q.exec("SELECT id FROM Student"))
-            qDebug()<<q.lastError();
+//        if(!q.exec("SELECT id FROM Student"))
+//            qDebug()<<q.lastError();
 
-        while (q.next())
-        {
-            SIZEt = q.value(0).toInt();
-        }
+//        while (q.next())
+//        {
+//            SIZEt = q.value(0).toInt();
+//            qDebug()<<q.value(0).toInt();
+//            qDebug()<<q.value(3).toInt();
+//        }
 
-        qDebug()<<"size = "<<SIZEt;
+//        //врахуємо 0 елемент
+//        SIZEt=SIZEt+1;
+//        qDebug()<<"size = "<<SIZEt;
 
-        if(SIZEt<0 || SIZEt > 999)
-        {
-            QMessageBox::critical(this, tr("Помилка!"), tr("Таблиця порожня!"));
-            return;
-        }
+//        if(SIZEt<0 || SIZEt > 999)
+//        {
+//            QMessageBox::critical(this, tr("Помилка!"), tr("Таблиця порожня!"));
+//            return;
+//        }
 
         q.exec("SELECT * FROM Student");
 
-        for(int i = 0; i<=SIZEt; i++)
+        while(q.next())
         {
             qDebug()<<"next";
-            q.next();
+            TempStudent = new Student;
 
-            TempElement = new Temp;
+            TempStudent->id = q.value(0).toInt();
+            TempStudent->surname = q.value(1).toString();
+            TempStudent->name = q.value(2).toString();
+            TempStudent->password = q.value(3).toInt();
 
-            TempElement->id = q.value(0).toInt();
-            TempElement->surname = q.value(1).toString();
-            TempElement->name = q.value(2).toString();
-            TempElement->password = q.value(3).toInt();
+            qDebug()<<TempStudent->id;
+            qDebug()<<TempStudent->password;
 
-            if(TempElement->surname.isEmpty() || TempElement->password ==0)
+            if(TempStudent->surname=="" || TempStudent->password == 0)
             {
-                QMessageBox::critical(this,tr("Помилка!"), tr("Таблиця містить порожні поля. Заповніть за допомогою редактора."));
+                QMessageBox::critical(this, tr("Помилка!"), tr("Таблиця містить порожні поля. Заповніть за допомогою редактора."));
                 return;
             }
             else
             {
-                TempElementVect.push_back(TempElement);
-                qDebug()<<"pushback";
+                StudentVect.push_back(TempStudent);
+                qDebug()<<"pushback student";
             }
         }
 
