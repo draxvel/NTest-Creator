@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    qDebug()<<"delete mainwindow";
+    //qDebug()<<"delete mainwindow";
     delete Element;
     delete ui;
 }
@@ -126,8 +126,8 @@ void MainWindow::OpenDB()
            if(query.next())
            {
                 title = query.value(0).toString();
-                time  = query.value(1).toInt();
-                author = query.value(2).toString();
+                author  = query.value(1).toString();
+                time = query.value(2).toInt();
                 perQuestion = query.value(3).toDouble();
            }
 
@@ -210,6 +210,8 @@ void MainWindow::SaveAsDB()
 
             ID = 0;
             ui->pushButtonNext->setEnabled(false);
+            ui->pushButtonAddQ->setVisible(true);
+            ui->pushButtonDeleteQ->setVisible(true);
 
             correctAnswersWidgetShow();
     }
@@ -454,7 +456,7 @@ void MainWindow::UpdateDB()
 //    }
   //  else
     {
-        QSqlQuery query;
+        QSqlQuery query(fileName);
         //Оновлення основної інформації у БД
         query.prepare("UPDATE About SET Title='"+title+"', Time='"+QString::number(time)+"', Author='"+author+"'"
                        ", PerQuestion='"+QString::number(perQuestion)+"'"
@@ -471,20 +473,35 @@ void MainWindow::UpdateDB()
 
 
         //Оновлення запитань у БД
-        for (int i=0; i<=SIZE; i++)
+        for (int i=0; i!=vect.size(); i++)
         {
             Element = new OneQuestion;
             Element = vect[i];
 
-            query.prepare("UPDATE Question SET text='"+Element->question+"', "
-                           "note='"+Element->note+"', "
-                           "type='"+QString::number(Element->type)+"', "
-                           "answer1='"+Element->answer1+"',"
-                           "answer2='"+Element->answer2+"', "
-                           "answer3='"+Element->answer3+"',"
-                           "answer4='"+Element->answer4+"',"
-                           "Correct='"+Element->correct+"'"
-                           " WHERE id ='"+QString::number(i)+"'");
+            if(Element->type ==3)
+            {
+                query.prepare("UPDATE Question SET text='"+Element->question+"', "
+                               "note='"+Element->note+"', "
+                               "type='"+QString::number(Element->type)+"', "
+                               "answer1=" ","
+                               "answer2=" ","
+                               "answer3=" ","
+                               "answer4=" ","
+                               "Correct='"+Element->correct+"'"
+                               " WHERE id ='"+QString::number(i)+"'");
+            }
+            else
+            {
+                query.prepare("UPDATE Question SET text='"+Element->question+"', "
+                               "note='"+Element->note+"', "
+                               "type='"+QString::number(Element->type)+"', "
+                               "answer1='"+Element->answer1+"',"
+                               "answer2='"+Element->answer2+"', "
+                               "answer3='"+Element->answer3+"',"
+                               "answer4='"+Element->answer4+"',"
+                               "Correct='"+Element->correct+"'"
+                               " WHERE id ='"+QString::number(i)+"'");
+            }
             if(!query.exec())
                      QMessageBox::critical(this, tr("Помилка!"),
                                            query.lastError().text()+"\nПомиилка запитання №"+QString::number(i)+" ");
@@ -549,7 +566,7 @@ void MainWindow::SaveDB()
         Element  = new OneQuestion;
         Element = vect[i];
 
-        qDebug()<<" in SAVE BD - quest = "<<Element->question;
+        //qDebug()<<" in SAVE BD - quest = "<<Element->question;
 
         query.prepare("INSERT INTO Question (id, text, note, type, answer1, answer2, answer3, answer4, Correct)"
                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -575,7 +592,7 @@ void MainWindow::SaveDB()
 
 void MainWindow::ClearDB()
 {
-    qDebug()<<" in ClearDB";
+    //qDebug()<<" in ClearDB";
     QSqlQuery query;
     //Очищення основної інформації у БД
     query.prepare("DELETE FROM About");
@@ -597,7 +614,7 @@ void MainWindow::ClearDB()
 
 void MainWindow::on_pushButtonNext_clicked()
 {   
-    qDebug()<<"----------------------------------NExt click";
+    //qDebug()<<"----------------------------------NExt click";
     if(checkLineEdit())
     {
                     //Якщо ще є запитання
@@ -653,10 +670,10 @@ void MainWindow::on_pushButtonSaveFirstPage_clicked()
                       TempStudent = new Student;
                       TempStudent = StudentVect[i];
 
-                      qDebug()<<TempStudent->id;
-                      qDebug()<<TempStudent->surname;
-                      qDebug()<<TempStudent->name;
-                      qDebug()<<TempStudent->password;
+                     // qDebug()<<TempStudent->id;
+                      //qDebug()<<TempStudent->surname;
+                      //qDebug()<<TempStudent->name;
+                      //qDebug()<<TempStudent->password;
 
                       q.prepare("INSERT INTO Student (id, surname, name, password)"
                                     "VALUES (?, ?, ?, ?)");
@@ -683,9 +700,9 @@ void MainWindow::on_pushButtonSaveFirstPage_clicked()
     while (q.next())
     {
         s = q.value(0).toInt();
-        qDebug()<<"s ="<<s;
+        //qDebug()<<"s ="<<s;
     }
-    qDebug()<<"s =            - "<<s;
+    //qDebug()<<"s =            - "<<s;
 
     if(s==-1)
     {
@@ -805,8 +822,12 @@ void MainWindow::on_pushButtonSaveNewTest_clicked()
         if(editMode)
             UpdateDB();
             else
+        {
+            saveIntoMass (ID);
+
             SaveDB();
-        qDebug()<<"End!";
+        }
+        //qDebug()<<"End!";
     }
 }
 
@@ -849,7 +870,7 @@ void MainWindow::correctAnswersWidgetShow()
 
 void MainWindow::cleanWidgets()
 {
-    qDebug()<<"In clean widgets";
+    //qDebug()<<"In clean widgets";
         ui->lineEditQuestion->clear();
         ui->lineEditNote->clear();
 
@@ -877,7 +898,7 @@ void MainWindow::on_pushButtonAddQ_clicked()
 {
     if(checkLineEdit())
     {
-            qDebug()<<"in UI (create mode)";
+           // qDebug()<<"in UI (create mode)";
            // addNew = true;
 
             //if()
@@ -912,14 +933,19 @@ void MainWindow::statusBarMessage()
     //Нумерація запитання у СтатусБар
     //Нумеруємо лише коли активна сторінка з питаннями
     if(ui->tabWidget->currentIndex()==1)
-    ui->statusBar->showMessage("Запитання: "+QString::number(ID)+"/"+QString::number(SIZE));
+    {
+       if(editMode)
+        ui->statusBar->showMessage("Запитання: "+QString::number(ID+1)+"/"+QString::number(SIZE+1));
+        else ui->statusBar->showMessage("Запитання: "+QString::number(ID+1)+"/"+QString::number(SIZE));
+    }
     else
         ui->statusBar->showMessage(fileName);
+
 }
 
 void MainWindow::on_pushButtonOpen_clicked()
 {
-    qDebug()<<"fileName = "<<fileName;
+    //qDebug()<<"fileName = "<<fileName;
     //if(editMode)
         emit openList(fileName);
     createList();
@@ -977,7 +1003,6 @@ void MainWindow::on_pushButtonAdd_clicked()
 
         while(q.next())
         {
-            qDebug()<<"next";
             TempStudent = new Student;
 
             TempStudent->id = q.value(0).toInt();
@@ -985,8 +1010,8 @@ void MainWindow::on_pushButtonAdd_clicked()
             TempStudent->name = q.value(2).toString();
             TempStudent->password = q.value(3).toInt();
 
-            qDebug()<<TempStudent->id;
-            qDebug()<<TempStudent->password;
+            //qDebug()<<TempStudent->id;
+           // qDebug()<<TempStudent->password;
 
             if(TempStudent->surname=="" || TempStudent->password == 0)
             {
@@ -996,11 +1021,10 @@ void MainWindow::on_pushButtonAdd_clicked()
             else
             {
                 StudentVect.push_back(TempStudent);
-                qDebug()<<"pushback student";
+                //qDebug()<<"pushback student";
             }
         }
 
         Tempdatabase.close();
-        qDebug()<<"CLOSEEEEEEEEEEEEEEEEEEE";
     }
 }
