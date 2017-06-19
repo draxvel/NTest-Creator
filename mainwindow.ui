@@ -126,6 +126,52 @@
         <string>Редактор запитань</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
+        <item row="8" column="1" rowspan="2" colspan="6">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="pushButtonSaveNewTest">
+            <property name="text">
+             <string>Зберегти</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QPushButton" name="pushButtonAddQ">
+              <property name="text">
+               <string>Додати запитання</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonDeleteQ">
+              <property name="text">
+               <string>Видалити запитання</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item row="9" column="0">
+         <widget class="QPushButton" name="pushButtonPrevious">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>&lt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="5">
+         <widget class="QLineEdit" name="lineEditQuestion">
+          <property name="placeholderText">
+           <string>Текст запитання</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="5">
          <widget class="QLabel" name="label_6">
           <property name="text">
@@ -137,7 +183,11 @@
          <widget class="QComboBox" name="comboBoxType"/>
         </item>
         <item row="2" column="0" colspan="2">
-         <widget class="QLineEdit" name="lineEditNote"/>
+         <widget class="QLineEdit" name="lineEditNote">
+          <property name="placeholderText">
+           <string>Примітка</string>
+          </property>
+         </widget>
         </item>
         <item row="3" column="6">
          <spacer name="horizontalSpacer_2">
@@ -152,28 +202,19 @@
           </property>
          </spacer>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>a</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="4" column="1">
-         <widget class="QLineEdit" name="lineEditAnswer1"/>
-        </item>
-        <item row="4" column="3">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>в</string>
+         <widget class="QLineEdit" name="lineEditAnswer1">
+          <property name="placeholderText">
+           <string>Варіант відповіді</string>
           </property>
          </widget>
         </item>
         <item row="4" column="4">
-         <widget class="QLineEdit" name="lineEditAnswer3"/>
+         <widget class="QLineEdit" name="lineEditAnswer3">
+          <property name="placeholderText">
+           <string>Варіант відповіді</string>
+          </property>
+         </widget>
         </item>
         <item row="5" column="2">
          <spacer name="verticalSpacer_2">
@@ -188,28 +229,19 @@
           </property>
          </spacer>
         </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>б</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="6" column="1">
-         <widget class="QLineEdit" name="lineEditAnswer2"/>
-        </item>
-        <item row="6" column="3">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>г</string>
+         <widget class="QLineEdit" name="lineEditAnswer2">
+          <property name="placeholderText">
+           <string>Варіант відповіді</string>
           </property>
          </widget>
         </item>
         <item row="6" column="4">
-         <widget class="QLineEdit" name="lineEditAnswer4"/>
+         <widget class="QLineEdit" name="lineEditAnswer4">
+          <property name="placeholderText">
+           <string>Варіант відповіді</string>
+          </property>
+         </widget>
         </item>
         <item row="7" column="4">
          <widget class="QLabel" name="label_7">
@@ -347,47 +379,39 @@
           </property>
          </widget>
         </item>
-        <item row="8" column="1" rowspan="2" colspan="6">
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QPushButton" name="pushButtonSaveNewTest">
-            <property name="text">
-             <string>Зберегти</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_3">
-            <item>
-             <widget class="QPushButton" name="pushButtonAddQ">
-              <property name="text">
-               <string>Додати запитання</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButtonDeleteQ">
-              <property name="text">
-               <string>Видалити запитання</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-        <item row="9" column="0">
-         <widget class="QPushButton" name="pushButtonPrevious">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
+        <item row="6" column="3">
+         <widget class="QLabel" name="label_11">
           <property name="text">
-           <string>&lt;</string>
+           <string>г</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="5">
-         <widget class="QLineEdit" name="lineEditQuestion"/>
+        <item row="4" column="3">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>в</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>б</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>a</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
